@@ -25,7 +25,6 @@ public:
 	}
 	static SDL_Event event;
 	int mu, mr = 0;
-	SDL_Rect mCharPos;
 private:
 	bool isRunning = false;
 	SDL_Window* window = nullptr;
@@ -36,5 +35,7 @@ private:
 	int cnt = 0;
 	int wh, ww = 0;
 	int c = 0;
-	SDL_Rect transform;
+	SDL_Rect* transform = nullptr;
+	SDL_Rect safePos;
+	SDL_Rect* mCharPos = nullptr;
 };

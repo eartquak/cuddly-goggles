@@ -15,13 +15,13 @@ public:
 	void render();
 	SDL_Rect uRect;
 private:
-	SDL_Renderer* renderer;
+	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* enemyTex = nullptr;
 	double ang = 0;
 	double angR = 0;
 	//float tAng = 0;
-	SDL_Rect* transform;
-	SDL_Rect* mCharPos;
+	SDL_Rect* transform = nullptr;
+	SDL_Rect* mCharPos = nullptr;
 	double ttuy, ttux = 0;
 	double vel = 50;
 	SDL_Rect rect;

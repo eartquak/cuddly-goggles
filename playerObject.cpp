@@ -10,7 +10,7 @@ playerObject::~playerObject()
 	free(bull);
 }
 
-void playerObject::init(SDL_Renderer *render)
+void playerObject::init(SDL_Renderer* render)
 {
 	destRect.w = destRect.h = 64;
 	renderer = render;

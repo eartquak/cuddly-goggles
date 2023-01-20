@@ -12,12 +12,12 @@ public:
 	playerObject();
 	~playerObject();
 
-	SDL_Rect srcRect, destRect;
 	float ang = 0;
 	void init(SDL_Renderer* render);
 	void update(double delta_time, int mu, int mr);
 	void render();
 	int my, mx = 0;
+	SDL_Rect srcRect, destRect;
 private:
 	SDL_Texture* gObjTex = nullptr;
 	SDL_Renderer* renderer = nullptr;

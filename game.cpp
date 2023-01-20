@@ -24,31 +24,33 @@ void game::init()
 	}
 	window = SDL_CreateWindow("game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE, SCREEN_SIZE, SDL_WINDOW_OPENGL);
 	SDL_GLContext GLContext = SDL_GL_CreateContext(window);
-	printf("%d", SDL_GL_MakeCurrent(window, GLContext));
+	SDL_GL_MakeCurrent(window, GLContext);
 	if (!window)
 	{
 		printf("window not created\n");
 		return;
 	}
-	renderer = SDL_CreateRenderer(window, -1, 0);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
 	{	
 		printf("renderer not created\n");
 		return;
 	}
+	//SDL_RenderSetScale(renderer, 0.5, 0.5);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	printf("%d", SDL_GL_SetSwapInterval(-1));
+	SDL_GL_SetSwapInterval(-1);
 	isRunning = true;
-
 	mChar = new playerObject();
 	map = new Map();
 	enemyObj = new enemyObject();
-	mCharPos.x = mCharPos.y =  SCREEN_SIZE/2;
-	mChar->destRect = mCharPos;
 	mChar->init(renderer);
+	mCharPos = &(mChar->destRect);
+	(*mCharPos).x = (*mCharPos).y = SCREEN_SIZE / 2;
+	safePos = *mCharPos;
 	map->init(renderer);
-	transform = map->rect;
-	enemyObj->init(renderer, &transform, &mCharPos);
+	transform = &(map->rect);
+	printf("%p", transform);
+	enemyObj->init(renderer, transform, mCharPos);
 	prev_tick = SDL_GetPerformanceCounter();
 	SDL_RendererInfo rendererInfo;
 	SDL_GetRendererInfo(renderer, &rendererInfo);
@@ -110,9 +112,9 @@ void game::update()
 	delta_time = static_cast<double>((cur_tick - prev_tick) / static_cast<double>(SDL_GetPerformanceFrequency()));
 	prev_tick = cur_tick;
 	mChar->update(delta_time, 0, 0);
-	mCharPos = mChar->srcRect;
+	//mCharPos = mChar->destRect;
 	map->update(delta_time, mu, mr);
-	transform = map->rect;
+	//transform = map->rect;
 	enemyObj->update(delta_time);
 	cnt++;
 	fps_time += delta_time;
@@ -123,6 +125,7 @@ void game::update()
 	cnt = (not (bool)(((int)fps_time) || 0)) * cnt;
 	fps_time = (not (bool)(((int)fps_time) || 0)) * fps_time;
 	checkCollision();
+	//printf("%d, %d\n", mCharPos.x, mCharPos.y);
 }
 
 void game::render()
@@ -144,5 +147,16 @@ void game::clean()
 
 void game::checkCollision()
 {
+	if ((256 + 64 >= (*transform).x + 1024) || (256  <= (*transform).x)) {
+		*transform = safePos;
+	}
 
+	if ((256 + 64 >= (*transform).y + 1024) || (256 <= (*transform).y)) {
+		*transform = safePos;
+	}
+
+	else {
+		safePos = *transform;
+		//printf("%d, %d", (*transform).x, (*transform).y);
+	}
 }

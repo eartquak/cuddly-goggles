@@ -13,6 +13,7 @@ Map::~Map()
 void Map::init(SDL_Renderer* render)
 {
 	renderer = render;
+	printf("%p", &rect);
 	SDL_Surface* tmpSurface = IMG_Load("Assets/tile.png");
 	mapTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1024, 1024);
 	mapT = SDL_CreateTextureFromSurface(renderer, tmpSurface);
