@@ -39,20 +39,24 @@ void Map::update(double delta_time, int mu, int mr)
 	ttuy += vel * delta_time * mu;
 	if (ttuy >= 1) {
 		rect.y += 1;
+		//transform.y = 1;
 		ttuy = 0;
 	}
 	else if (ttuy <= -1) {
 		rect.y -= 1;
+		//transform.y = -1;
 		ttuy = 0;
 	}
 
 	ttux += vel * delta_time * mr;
 	if (ttux >= 1) {
 		rect.x += 1;
+		//transform.x = 1;
 		ttux = 0;
 	}
 	else if (ttux <= -1) {
 		rect.x -= 1;
+		//transform.x = -1;
 		ttux = 0;
 	}
 }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "playerObject.h"
 #include "map.h"
+#include "enemyObject.h"
 #define SCREEN_SIZE 512
 
 class game {
@@ -12,11 +13,11 @@ public:
 	~game();
 
 	void init();
-
 	void handleEvent();
 	void update();
 	void render();
 	void clean();
+	void checkCollision();
 
 	bool running() 
 	{
@@ -24,6 +25,7 @@ public:
 	}
 	static SDL_Event event;
 	int mu, mr = 0;
+	SDL_Rect mCharPos;
 private:
 	bool isRunning = false;
 	SDL_Window* window = nullptr;
@@ -34,4 +36,5 @@ private:
 	int cnt = 0;
 	int wh, ww = 0;
 	int c = 0;
+	SDL_Rect transform;
 };
