@@ -76,23 +76,23 @@ void playerObject::render()
 
 void playerObject::makeBullet(double delta_time) {
 	for (int i = 1; i < n; i++) {
-		((bull+i)->bullttuy) += bullvel * delta_time * sin((bull+i)->bullAngR);
-		if ((bull+i)->bullttuy >= 1) {
-			(bull+i)->bullRect.y -= 1;
-			(bull+i)->bullttuy = 0;
+		((bull + i)->bullttuy) += bullvel * delta_time * sin((bull + i)->bullAngR);
+		if ((bull + i)->bullttuy >= 1) {
+			(bull + i)->bullRect.y -= 1;
+			(bull + i)->bullttuy = 0;
 		}
-		else if ((bull+i)->bullttuy <= -1) {
-			(bull+i)->bullRect.y += 1;
-			(bull+i)->bullttuy = 0;
+		else if ((bull + i)->bullttuy <= -1) {
+			(bull + i)->bullRect.y += 1;
+			(bull + i)->bullttuy = 0;
 		}
-		((bull+i)->bullttux) += bullvel * delta_time * cos((bull+i)->bullAngR);
-		if ((bull+i)->bullttux >= 1) {
-			(bull+i)->bullRect.x -= 1;
-			(bull+i)->bullttux = 0;
+		((bull + i)->bullttux) += bullvel * delta_time * cos((bull + i)->bullAngR);
+		if ((bull + i)->bullttux >= 1) {
+			(bull + i)->bullRect.x -= 1;
+			(bull + i)->bullttux = 0;
 		}
-		else if ((bull+i)->bullttux <= -1) {
-			(bull+i)->bullRect.x += 1;
-			(bull+i)->bullttux = 0;
+		else if ((bull + i)->bullttux <= -1) {
+			(bull + i)->bullRect.x += 1;
+			(bull + i)->bullttux = 0;
 		}
 	}
 }
