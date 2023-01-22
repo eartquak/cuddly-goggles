@@ -40,21 +40,35 @@ void game::init()
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_GL_SetSwapInterval(-1);
 	isRunning = true;
+
 	mChar = new playerObject();
 	map = new Map();
 	enemyObj = new enemyObject();
+	
 	mChar->init(renderer);
 	mCharPos = &(mChar->destRect);
 	(*mCharPos).x = (*mCharPos).y = SCREEN_SIZE / 2;
 	safePos = *mCharPos;
+	mChar->time = &time;
+
 	map->init(renderer);
+	
 	transform = &(map->rect);
+	mChar->transform = transform;
+	
 	printf("%p", transform);
+	
 	enemyObj->init(renderer, transform, mCharPos);
+	
 	prev_tick = SDL_GetPerformanceCounter();
+	
 	SDL_RendererInfo rendererInfo;
 	SDL_GetRendererInfo(renderer, &rendererInfo);
 	printf("%s", rendererInfo.name);
+
+	SDL_Surface* tmpSurface = IMG_Load("Assets/bullet.png");
+	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+	SDL_FreeSurface(tmpSurface);
 }
 
 void game::handleEvent()
@@ -117,6 +131,7 @@ void game::update()
 	//transform = map->rect;
 	enemyObj->update(delta_time);
 	cnt++;
+	time += delta_time;
 	fps_time += delta_time;
 	if ((bool)(((int)fps_time) || 0)) {
 		//printf("\r");
@@ -125,13 +140,15 @@ void game::update()
 	cnt = (not (bool)(((int)fps_time) || 0)) * cnt;
 	fps_time = (not (bool)(((int)fps_time) || 0)) * fps_time;
 	checkCollision();
+	mChar->bulletDestroy();
 	//printf("%d, %d\n", mCharPos.x, mCharPos.y);
 }
 
 void game::render()
 {
 	SDL_RenderClear(renderer);
-	map->render(); 
+	map->render();
+	enemyCreate();
 	mChar->render();
 	enemyObj->render();
 	SDL_RenderPresent(renderer);
@@ -160,3 +177,4 @@ void game::checkCollision()
 		//printf("%d, %d", (*transform).x, (*transform).y);
 	}
 }
+

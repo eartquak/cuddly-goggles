@@ -20,6 +20,8 @@ void playerObject::init(SDL_Renderer* render)
 	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	SDL_FreeSurface(tmpSurface);
 	bull = (struct bullet*)malloc(sizeof(struct bullet));
+	bullRend.w = 8;
+	bullRend.h = 4;
 }
 
 void playerObject::update(double delta_time, int mu, int mr)
@@ -35,11 +37,15 @@ void playerObject::update(double delta_time, int mu, int mr)
 			(bull + n - 1)->bullAngR = (M_PI * ((bull + n - 1)->bullAng)) / (double)180;
 			(bull + n - 1)->bullRect.x = (destRect.x - (cos((bull + n - 1)->bullAngR)*(destRect.w/2)) + (destRect.w / 2));
 			(bull + n - 1)->bullRect.y = (destRect.y - (sin((bull + n - 1)->bullAngR)*(destRect.h/2)) + (destRect.h / 2));
+			(bull + n - 1)->bullTran.x = -(*transform).x - 512;
+			(bull + n - 1)->bullTran.y = -(*transform).y - 512;
 			(bull + n - 1)->bullRect.h = 4;
 			(bull + n - 1)->bullRect.w = 8;
+			(bull + n - 1)->time = *time;
 			//printf("(%d, %d, %f, %d)", (bull + n - 1)->bullRect.x, (bull + n - 1)->bullRect.y, (bull + n - 1)->bullAng, n);
 		}
 	}
+	//printf("%lf", *time);
 	// printf("%d, %d\n", x, y);
 
 	ttuy += vel * delta_time * mu;
@@ -69,8 +75,12 @@ void playerObject::update(double delta_time, int mu, int mr)
 void playerObject::render()
 {
 	for (int i = 1; i < n; i++) {
-		SDL_RenderCopyEx(renderer, bullTex, NULL, &((bull+i)->bullRect), (bull+i)->bullAng, NULL, SDL_FLIP_NONE);
+		bullRend.x = (bull + i)->bullRect.x + (bull + i)->bullTran.x + (*transform).x + 512;
+		bullRend.y = (bull + i)->bullRect.y + (bull + i)->bullTran.y + (*transform).y + 512;
+		SDL_RenderCopyEx(renderer, bullTex, NULL, &bullRend, (bull+i)->bullAng, NULL, SDL_FLIP_NONE);
+		//printf("%lf ", (bull + i)->time);
 	}
+	//printf("\n");
 	SDL_RenderCopyEx(renderer, gObjTex, NULL, &destRect, ang, NULL, SDL_FLIP_NONE);
 }
 
@@ -94,5 +104,25 @@ void playerObject::makeBullet(double delta_time) {
 			(bull + i)->bullRect.x += 1;
 			(bull + i)->bullttux = 0;
 		}
+	}
+}
+
+void playerObject::bulletDestroy() {
+	struct bullet bu[100];
+	int k = 0;
+	for (int i = 1; i < n; i++) {
+		if (*time <= ((bull + i)->time + 2)) {
+			bu[i-1] = *(bull + i);
+			k += 1;
+			//printf("%lf ", bu[i-1].time);
+		}
+	}
+	//printf("\n");
+	//printf("%lf", bu[]);
+	n = k + 1;
+	bull = (struct bullet*)realloc(bull, n * sizeof(struct bullet));
+	for (int i = 1; i < n; i++) {
+		*(bull + i) = bu[i - 1];
+		//printf("%lf\n", bu[n - 1].time);
 	}
 }

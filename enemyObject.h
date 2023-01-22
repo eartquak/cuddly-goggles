@@ -13,7 +13,13 @@ public:
 	void init(SDL_Renderer* render, SDL_Rect* r, SDL_Rect* pR);
 	void update(double delta_time);
 	void render();
+	void enemyCreate();
 	SDL_Rect uRect;
+	struct enemy {
+		SDL_Rect rect;
+		float ang, angR = 0;
+
+	};
 private:
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* enemyTex = nullptr;
@@ -25,4 +31,5 @@ private:
 	double ttuy, ttux = 0;
 	double vel = 50;
 	SDL_Rect rect;
+	SDL_Rect spawn_rect;
 };

@@ -18,10 +18,22 @@ public:
 	void render();
 	int my, mx = 0;
 	SDL_Rect srcRect, destRect;
+	SDL_Rect* transform;
+	void bulletDestroy();
+	double* time = nullptr;
+	int n = 1;
+	struct bullet {
+		float bullAng, bullAngR = 0;
+		SDL_Rect bullRect;
+		SDL_Rect bullTran;
+		double bullttux, bullttuy = 0;
+		double time = 0;
+	};
 private:
 	SDL_Texture* gObjTex = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* bullTex = nullptr;
+	SDL_Rect bullRend;
 	double vel = 100;
 	double ttux = 0;
 	double ttuy = 0;
@@ -30,12 +42,7 @@ private:
 	void makeBullet(double delta_time);
 	//SDL_Rect bullRect;
 	//float bullAng, bullAngR = 0;
-	int n = 1;
-	struct bullet {
-		float bullAng, bullAngR = 0;
-		SDL_Rect bullRect;
-		double bullttux, bullttuy = 0;
-	};
 	struct bullet *bull = nullptr;
+	int nEnemy = 0;
 };
 

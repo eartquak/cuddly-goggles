@@ -18,6 +18,7 @@ public:
 	void render();
 	void clean();
 	void checkCollision();
+	void enemyCreate();
 
 	bool running() 
 	{
@@ -38,4 +39,7 @@ private:
 	SDL_Rect* transform = nullptr;
 	SDL_Rect safePos;
 	SDL_Rect* mCharPos = nullptr;
+	double time;
+	SDL_Rect spawn_rect;
+	SDL_Texture* bullTex;
 };

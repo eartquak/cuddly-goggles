@@ -15,7 +15,6 @@ void enemyObject::init(SDL_Renderer* render, SDL_Rect* r, SDL_Rect* pR)
 	renderer = render;
 	SDL_Surface* tmpSurface = IMG_Load("Assets/zombie.png");
 	enemyTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	tmpSurface = IMG_Load("Assets/bullet.png");
 	SDL_FreeSurface(tmpSurface);
 	rect.h = rect.w = 64;
 	rect.x = rect.y = 0;
@@ -53,4 +52,41 @@ void enemyObject::update(double delta_time)
 void enemyObject::render()
 {
 	SDL_RenderCopyEx(renderer, enemyTex, NULL, &uRect, ang, NULL, SDL_FLIP_NONE);
+}
+
+void game::enemyCreate()
+{
+	/*spawn_rect.x = spawn_rect.y = 128;
+	if (((*transform).x + SCREEN_SIZE * 2) <= 384) {
+		spawn_rect.w = (*transform).x + SCREEN_SIZE * 2 - 128;
+	}
+
+	else {
+		spawn_rect.w = 256;
+	}
+	if ((*transform).x >= 128) {
+		spawn_rect.x = (*transform).x;
+		spawn_rect.w = 384 - (*transform).x;
+	}
+	else {
+		spawn_rect.x = 128;
+		spawn_rect.w = 256;
+	}
+	if (384 >= ((*transform).y + SCREEN_SIZE * 2)) {
+		spawn_rect.h = (*transform).y + SCREEN_SIZE * 2 - 128;
+	}
+	else {
+		spawn_rect.h = 256;
+	}
+	if ((*transform).y >= 128) {
+		spawn_rect.y = (*transform).y;
+		spawn_rect.h = 384 - (*transform).y;
+	}
+	else {
+		spawn_rect.y = 128;
+		spawn_rect.h = 256;
+	}
+	//printf("%d, %d\n", spawn_rect.w, spawn_rect.h);
+	SDL_RenderCopy(renderer, bullTex, NULL, &spawn_rect);*/
+
 }
