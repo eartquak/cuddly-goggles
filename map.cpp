@@ -13,7 +13,6 @@ Map::~Map()
 void Map::init(SDL_Renderer* render)
 {
 	renderer = render;
-	printf("%p", &rect);
 	SDL_Surface* tmpSurface = IMG_Load("Assets/tile.png");
 	mapTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1024, 1024);
 	mapT = SDL_CreateTextureFromSurface(renderer, tmpSurface);
@@ -35,8 +34,15 @@ void Map::init(SDL_Renderer* render)
 	rect.y = -SCREEN_SIZE;
 }
 
-void Map::update(double delta_time, int mu, int mr)
+void Map::update(double delta_time, int mu, int mr, bool tx, bool ty)
 {
+
+	if (mu && mr) {
+		vel = defvel * SQRT_2;
+	}
+	else {
+		vel = defvel;
+	}
 	ttuy += vel * delta_time * mu;
 	if (ttuy >= 1) {
 		rect.y += 1;

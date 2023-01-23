@@ -47,24 +47,27 @@ void game::init()
 	
 	mChar->init(renderer);
 	mCharPos = &(mChar->destRect);
-	(*mCharPos).x = (*mCharPos).y = SCREEN_SIZE / 2;
+	(*mCharPos).x = (*mCharPos).y = (SCREEN_SIZE / 2 - mCharPos->w/2) ;
 	safePos = *mCharPos;
 	mChar->time = &time;
+	nBull = &(mChar->n);
+	bul = &(mChar->bull);
+	bulln = &(mChar->bulln);
 
 	map->init(renderer);
 	
 	transform = &(map->rect);
 	mChar->transform = transform;
 	
-	printf("%p", transform);
-	
 	enemyObj->init(renderer, transform, mCharPos);
+	ene = &(enemyObj->en);
+	nEnemy = &(enemyObj->nEnemy);
 	
 	prev_tick = SDL_GetPerformanceCounter();
 	
 	SDL_RendererInfo rendererInfo;
 	SDL_GetRendererInfo(renderer, &rendererInfo);
-	printf("%s", rendererInfo.name);
+	//printf("%s", rendererInfo.name);
 
 	SDL_Surface* tmpSurface = IMG_Load("Assets/bullet.png");
 	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
@@ -94,6 +97,11 @@ void game::handleEvent()
 				case SDLK_d:
 					mr = -1;
 					break;
+				case SDLK_r:
+					if (!rdown) {
+						*bulln = 6;
+						rdown = true;
+					}
 			}
 			break;
 		case SDL_KEYUP:
@@ -111,6 +119,8 @@ void game::handleEvent()
 				case SDLK_d:
 					mr = 0;
 					break;
+				case SDLK_r:
+					rdown = false;
 			}
 			break;
 			//printf("%d, %d", mChar->mx, mChar->my);
@@ -127,7 +137,7 @@ void game::update()
 	prev_tick = cur_tick;
 	mChar->update(delta_time, 0, 0);
 	//mCharPos = mChar->destRect;
-	map->update(delta_time, mu, mr);
+	map->update(delta_time, mu, mr, false, false);
 	//transform = map->rect;
 	enemyObj->update(delta_time);
 	cnt++;
@@ -142,13 +152,14 @@ void game::update()
 	checkCollision();
 	mChar->bulletDestroy();
 	//printf("%d, %d\n", mCharPos.x, mCharPos.y);
+	//printf("%d\n", *bulln);
 }
 
 void game::render()
 {
 	SDL_RenderClear(renderer);
 	map->render();
-	enemyCreate();
+	//enemyCreate();
 	mChar->render();
 	enemyObj->render();
 	SDL_RenderPresent(renderer);
@@ -164,17 +175,47 @@ void game::clean()
 
 void game::checkCollision()
 {
-	if ((256 + 64 >= (*transform).x + 1024) || (256  <= (*transform).x)) {
-		*transform = safePos;
+	if ((256 + 32 >= (*transform).x + 1024) || (256 - 32 <= (*transform).x)) {
+		(*transform).x = safePos.x;
+		coll = 1;
 	}
-
-	if ((256 + 64 >= (*transform).y + 1024) || (256 <= (*transform).y)) {
-		*transform = safePos;
-	}
-
 	else {
-		safePos = *transform;
+		safePos.x = (*transform).x;
 		//printf("%d, %d", (*transform).x, (*transform).y);
+	}
+	if ((256 + 32 >= (*transform).y + 1024) || (256 - 32 <= (*transform).y)) {
+		(*transform).y = safePos.y;
+		coll = 1;
+	}
+	else {
+		safePos.y = (*transform).y;
+		//printf("%d, %d", (*transform).x, (*transform).y);
+	}
+	for (int i = 1; i < *nBull; i++) {
+		if ((*bul + i)->isRendered) {
+			for (int j = 1; j < *nEnemy; j++) {
+				if ((*ene + j)->isRendered) {
+					SDL_Rect enecent;
+					enecent.x = ((*ene + j)->rend).x + ((*ene + j)->rend).w / 2;
+					enecent.y = ((*ene + j)->rend).y + ((*ene + j)->rend).h / 2;
+					float dist_2 = pow(((*bul + i)->bullRend.x - enecent.x), 2) + pow(((*bul + i)->bullRend.y - enecent.y), 2);
+					if (dist_2 < 200) {
+						printf("%d", (*ene + j)->nHit);
+						if (((*ene + j)->nHit) < 3) {
+							(*bul + i)->isRendered = false;
+							((*ene + j)->nHit)++;
+							(*ene + j)->isAngry = true;
+						}
+						else {
+							(*bul + i)->isRendered = false;
+							((*ene + j)->nHit)++;
+							(*ene + j)->isAngry = true;
+							(*ene + j)->isRendered = false;
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

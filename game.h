@@ -18,14 +18,16 @@ public:
 	void render();
 	void clean();
 	void checkCollision();
-	void enemyCreate();
-
+	//void enemyCreate();
+	struct enemy** ene;
+	struct bullet** bul;
 	bool running() 
 	{
 		return isRunning;
 	}
 	static SDL_Event event;
 	int mu, mr = 0;
+	int coll = 0;
 private:
 	bool isRunning = false;
 	SDL_Window* window = nullptr;
@@ -42,4 +44,8 @@ private:
 	double time;
 	SDL_Rect spawn_rect;
 	SDL_Texture* bullTex;
+	int* nEnemy = nullptr;
+	int* nBull = nullptr;
+	int* bulln = nullptr;
+	bool rdown = false;
 };
