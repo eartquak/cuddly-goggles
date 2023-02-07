@@ -1,4 +1,6 @@
-#include "enemyObject.h"
+#include "include/enemyObject.h"
+
+using namespace std;
 
 enemyObject::enemyObject()
 {
@@ -8,8 +10,9 @@ enemyObject::~enemyObject()
 {
 }
 
-void enemyObject::init(SDL_Renderer* render, SDL_Rect* r, SDL_Rect* pR)
+void enemyObject::init(SDL_Renderer* render, Vector2* r, SDL_Rect* pR)
 {
+	PLAYER_SIZE = SCREEN_SIZE.y / 16;
 	transform = r;
 	mCharPos = pR;
 	renderer = render;
@@ -20,42 +23,18 @@ void enemyObject::init(SDL_Renderer* render, SDL_Rect* r, SDL_Rect* pR)
 	//rect.x = rect.y = 0;
 	//uRect.h = uRect.w = 64;
 	en = (struct enemy*)malloc(sizeof(struct enemy));
-	enemyCreate(512, 512);
+	
+	//enemyCreate(0, 0);
 }
 
 void enemyObject::update(double delta_time)
 {
 	for (int i = 1; i < nEnemy; i++) {
-		if ((en + i)->isAngry) {
-			(en + i)->vel = 75;
-		}
-		else {
-			(en + i)->vel = 50;
-		}
-		(en + i)->angR = atan2((double)(((en+i)->rend.y + (en + i)->rend.h / 2) - SCREEN_SIZE / 2), (double)(((en+i)->rend.x + (en+i)->rend.w / 2) - SCREEN_SIZE / 2));
-		(en+i)->ang = ((double)180 * (en+i)->angR / M_PI);
-		//printf("(%f) ", ang);
-		(en+i)->enettuy += (en+i)->vel * delta_time * sin((en+i)->angR);
-		(en+i)->enettux += (en+i)->vel * delta_time * cos((en+i)->angR);
-		//printf("(%lf, %lf) (%lf, %lf)\n", cos(ang), sin(ang), ttux, ttuy);
-		if ((en+i)->enettuy >= 1) {
-			(en+i)->rect.y -= 1;
-			(en+i)->enettuy = 0;
-		}
-		else if ((en+i)->enettuy <= -1) {
-			(en+i)->rect.y += 1;
-			(en+i)->enettuy = 0;
-		}
-		else if ((en+i)->enettux >= 1) {
-			(en+i)->rect.x -= 1;
-			(en+i)->enettux = 0;
-		}
-		else if ((en+i)->enettux <= -1) {
-			(en+i)->rect.x += 1;
-			(en+i)->enettux = 0;
-		}
-		(en+i)->rend.y = (en+i)->rect.y + (*transform).y + 512;
-		(en+i)->rend.x = (en+i)->rect.x + (*transform).x + 512;
+		(en + i)->angR = atan2((double)(((en + i)->rend.y + (en + i)->rend.h / 2) - SCREEN_SIZE.y / 2), (double)(((en + i)->rend.x + (en + i)->rend.w / 2) - SCREEN_SIZE.x / 2));
+		(en + i)->ang = ((double)180 * (en + i)->angR / M_PI);
+		(en + i)->pos.MakeVel((en+i)->vel, (en+i)->angR, &(en + i)->enettux, &(en + i)->enettuy, delta_time);
+		(en + i)->rend.y = (en + i)->pos.y + transform->y;
+		(en + i)->rend.x = (en + i)->pos.x + transform->x;
 	}
 }
 
@@ -104,14 +83,25 @@ void enemyObject::enemyCreate(int x, int y)
 	SDL_RenderCopy(renderer, bullTex, NULL, &spawn_rect);*/
 	nEnemy++;
 	en = (struct enemy*)realloc(en, nEnemy * sizeof(struct enemy));
-	(en + nEnemy - 1)->rect.x = 0;
-	(en + nEnemy - 1)->rect.y = 0;
-	(en + nEnemy - 1)->rend.w = 64;
-	(en + nEnemy - 1)->rend.h = 64;
-	(en + nEnemy - 1)->angR = atan2((double)(((en + nEnemy)->rend.y + (en + nEnemy)->rend.h / 2) - SCREEN_SIZE / 2), (double)(((en + nEnemy)->rend.x + (en + nEnemy)->rend.w / 2) - SCREEN_SIZE / 2));
+	(en + nEnemy - 1)->pos.x = x;
+	(en + nEnemy - 1)->pos.y = y;
+	(en + nEnemy - 1)->rend.w = PLAYER_SIZE;
+	(en + nEnemy - 1)->rend.h = PLAYER_SIZE;
+	(en + nEnemy - 1)->angR = atan2((double)(((en + nEnemy)->rend.y + (en + nEnemy)->rend.h / 2) - SCREEN_SIZE.y / 2), (double)(((en + nEnemy)->rend.x + (en + nEnemy)->rend.w / 2) - SCREEN_SIZE.y / 2));
 	(en + nEnemy - 1)->ang = ((double)180 * (en + nEnemy)->angR / M_PI);
 	(en + nEnemy - 1)->isRendered = true;
 	(en + nEnemy - 1)->nHit = 0;
 	(en + nEnemy - 1)->isAngry = false;
 	(en + nEnemy - 1)->vel = 50;
+	(en + nEnemy - 1)->health = 100;
+	(en + nEnemy - 1)->enettux = 0;
+	(en + nEnemy - 1)->enettuy = 0;
 }
+
+void enemyObject::enemyAttack(struct enemy *enmy)
+{
+	/*if (enmy->ttk == 0) {
+		mChar
+	}*/
+}
+

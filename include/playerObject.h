@@ -1,10 +1,12 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "game.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Vector2.h"
 
 class playerObject
 {
@@ -12,38 +14,52 @@ public:
 	playerObject();
 	~playerObject();
 
-	float ang = 0;
+	double ang = 0;
 	void init(SDL_Renderer* render);
 	void update(double delta_time, int mu, int mr);
 	void render();
-	int my, mx = 0;
+	int my = 0;
+	int mx = 0;
 	SDL_Rect srcRect, destRect;
-	SDL_Rect* transform;
+	Vector2* transform = nullptr;
 	void bulletDestroy();
 	double* time = nullptr;
 	int n = 1;
 	struct bullet* bull = nullptr;
 	int bulln = 6;
+	bool isRendered = true;
+	int health = 100;
+	Vector2 SCREEN_SIZE;
+	Vector2 MAP_SIZE;
+	int PLAYER_SIZE;
 private:
 	SDL_Texture* gObjTex = nullptr;
 	SDL_Renderer* renderer = nullptr;
+
 	SDL_Texture* bullTex = nullptr;
-	double defvel = 100;
-	double vel = 100;
+	Mix_Chunk* bullsound = nullptr;
+	double defvel = 300;
+	double vel = 300;
 	double ttux = 0;
 	double ttuy = 0;
-	int x, y = 0;
+	int x = 0;
+	int y = 0;
 	double bullvel = 700;
-	void makeBullet(double delta_time);
-	//SDL_Rect bullRect;
-	//float bullAng, bullAngR = 0;
+	void moveBullet(double delta_time);
+	void makeBullet();
+};
+
+struct player {
+
 };
 
 struct bullet {
-	float bullAng, bullAngR = 0;
-	SDL_Rect bullRect;
+	double bullAng = 0;
+	double bullAngR = 0;
+	Vector2 bullpos;
 	SDL_Rect bullRend;
-	double bullttux, bullttuy = 0;
+	double bullttux = 0;
+	double bullttuy = 0;
 	double time = 0;
 	bool isRendered = true;
 };

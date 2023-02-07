@@ -1,9 +1,13 @@
-#include "game.h"
+#include "include/game.h"
 
 
 game *game1 = nullptr;
 
+using namespace std;
+
 int main(int argc, char* argv[]) {
+	Vector2 SCREEN_SIZE;
+	Vector2 MAP_SIZE;
 	game1 = new game();
 	game1->init();
 	while (game1->running()) {

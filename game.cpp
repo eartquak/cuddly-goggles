@@ -1,4 +1,4 @@
-#include "game.h"
+#include "include/game.h"
 
 playerObject* mChar = nullptr;
 Map* map = nullptr;
@@ -14,6 +14,8 @@ game::~game()
 
 SDL_Event game::event;
 
+using namespace std;
+
 void game::init()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING))
@@ -22,9 +24,14 @@ void game::init()
 
 		return;
 	}
-	window = SDL_CreateWindow("game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE, SCREEN_SIZE, SDL_WINDOW_OPENGL);
-	SDL_GLContext GLContext = SDL_GL_CreateContext(window);
-	SDL_GL_MakeCurrent(window, GLContext);
+	int wx, wy;
+	window = SDL_CreateWindow("game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE.x, SCREEN_SIZE.x, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_GetWindowSize(window, &wx, &wy);
+	SCREEN_SIZE.x = wx;
+	SCREEN_SIZE.y = wy;
+	MAP_SIZE.x = MAP_SIZE.y =720;
+	//SDL_GLContext GLContext = SDL_GL_CreateContext(window);
+	//SDL_GL_MakeCurrent(window, GLContext);
 	if (!window)
 	{
 		printf("window not created\n");
@@ -36,42 +43,57 @@ void game::init()
 		printf("renderer not created\n");
 		return;
 	}
-	//SDL_RenderSetScale(renderer, 0.5, 0.5);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_GL_SetSwapInterval(-1);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	//SDL_GL_SetSwapInterval(-1);
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+
+	TTF_Init();
+
+	Mix_Init(0);
+	Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 1024);
+
 	isRunning = true;
 
 	mChar = new playerObject();
 	map = new Map();
 	enemyObj = new enemyObject();
 	
+	mChar->SCREEN_SIZE = SCREEN_SIZE;
+	map->SCREEN_SIZE = SCREEN_SIZE;
+	enemyObj->SCREEN_SIZE = SCREEN_SIZE;
+	mChar->MAP_SIZE = MAP_SIZE;
+	map->MAP_SIZE = MAP_SIZE;
+	enemyObj->MAP_SIZE = MAP_SIZE;
 	mChar->init(renderer);
 	mCharPos = &(mChar->destRect);
-	(*mCharPos).x = (*mCharPos).y = (SCREEN_SIZE / 2 - mCharPos->w/2) ;
+	(*mCharPos).y = (SCREEN_SIZE.y / 2 - mCharPos->h / 2);
+	(*mCharPos).x = (SCREEN_SIZE.x / 2 - mCharPos->w / 2);
 	safePos = *mCharPos;
-	mChar->time = &time;
+	mChar->time = &time1;
 	nBull = &(mChar->n);
 	bul = &(mChar->bull);
 	bulln = &(mChar->bulln);
 
 	map->init(renderer);
-	
-	transform = &(map->rect);
+	transform = &(map->mappos);
+
+
 	mChar->transform = transform;
-	
+
 	enemyObj->init(renderer, transform, mCharPos);
 	ene = &(enemyObj->en);
 	nEnemy = &(enemyObj->nEnemy);
-	
+	enemyObj->plChar = mChar;
 	prev_tick = SDL_GetPerformanceCounter();
 	
 	SDL_RendererInfo rendererInfo;
 	SDL_GetRendererInfo(renderer, &rendererInfo);
-	//printf("%s", rendererInfo.name);
 
 	SDL_Surface* tmpSurface = IMG_Load("Assets/bullet.png");
 	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	SDL_FreeSurface(tmpSurface);
+
+	agave = TTF_OpenFont("agave.ttf", 24);
 }
 
 void game::handleEvent()
@@ -123,12 +145,11 @@ void game::handleEvent()
 					rdown = false;
 			}
 			break;
-			//printf("%d, %d", mChar->mx, mChar->my);
 		default:
 			break;
 	}
 	
-}
+}  
 
 void game::update()
 {
@@ -136,32 +157,35 @@ void game::update()
 	delta_time = static_cast<double>((cur_tick - prev_tick) / static_cast<double>(SDL_GetPerformanceFrequency()));
 	prev_tick = cur_tick;
 	mChar->update(delta_time, 0, 0);
-	//mCharPos = mChar->destRect;
 	map->update(delta_time, mu, mr, false, false);
-	//transform = map->rect;
 	enemyObj->update(delta_time);
 	cnt++;
-	time += delta_time;
-	fps_time += delta_time;
-	if ((bool)(((int)fps_time) || 0)) {
-		//printf("\r");
-		//printf("%d", cnt);
-	}
-	cnt = (not (bool)(((int)fps_time) || 0)) * cnt;
-	fps_time = (not (bool)(((int)fps_time) || 0)) * fps_time;
+	time1 += delta_time;
 	checkCollision();
 	mChar->bulletDestroy();
-	//printf("%d, %d\n", mCharPos.x, mCharPos.y);
-	//printf("%d\n", *bulln);
+	//printf("FPS: %lf", 1 / delta_time);
+	//printf("\r");
+	enemyTC = (int)(time1/2)+5;
+	createEnemy();
 }
 
 void game::render()
 {
 	SDL_RenderClear(renderer);
 	map->render();
-	//enemyCreate();
 	mChar->render();
 	enemyObj->render();
+
+	/*SDL_Surface* surfaceMessage = TTF_RenderText_Solid(agave, "apple", {255, 255, 255});
+	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+	SDL_Rect Message_rect;
+	Message_rect.x = 0;
+	Message_rect.y = 0;
+	Message_rect.w = 100;
+	Message_rect.h = 100;
+	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(Message);*/
 	SDL_RenderPresent(renderer);
 }
 
@@ -172,50 +196,72 @@ void game::clean()
 	SDL_Quit();
 	printf("Game quit\n");
 }
-
+//collison needs to change - quad tree
 void game::checkCollision()
 {
-	if ((256 + 32 >= (*transform).x + 1024) || (256 - 32 <= (*transform).x)) {
-		(*transform).x = safePos.x;
+	if (((SCREEN_SIZE.x / 2 + mChar->destRect.w/2) >= (transform->x + MAP_SIZE.x)) || (SCREEN_SIZE.x / 2 - mChar->destRect.w / 2 <= transform->x)) {
+		transform->x = safePos.x;
 		coll = 1;
 	}
 	else {
 		safePos.x = (*transform).x;
-		//printf("%d, %d", (*transform).x, (*transform).y);
 	}
-	if ((256 + 32 >= (*transform).y + 1024) || (256 - 32 <= (*transform).y)) {
-		(*transform).y = safePos.y;
+	if (((SCREEN_SIZE.y/2 + mChar->destRect.h/2) >= (transform->y + MAP_SIZE.y)) || ((SCREEN_SIZE.y/2 - mChar->destRect.h/2) <= transform->y)) {
+		transform->y = safePos.y;
 		coll = 1;
 	}
 	else {
-		safePos.y = (*transform).y;
-		//printf("%d, %d", (*transform).x, (*transform).y);
+		safePos.y = transform->y;
 	}
-	for (int i = 1; i < *nBull; i++) {
-		if ((*bul + i)->isRendered) {
-			for (int j = 1; j < *nEnemy; j++) {
-				if ((*ene + j)->isRendered) {
-					SDL_Rect enecent;
-					enecent.x = ((*ene + j)->rend).x + ((*ene + j)->rend).w / 2;
-					enecent.y = ((*ene + j)->rend).y + ((*ene + j)->rend).h / 2;
-					float dist_2 = pow(((*bul + i)->bullRend.x - enecent.x), 2) + pow(((*bul + i)->bullRend.y - enecent.y), 2);
+	for (int j = 1; j < *nEnemy; j++) {
+		if ((*ene + j)->isRendered) {
+			SDL_Rect enecent;
+			enecent.x = ((*ene + j)->rend).x + ((*ene + j)->rend).w / 2;
+			enecent.y = ((*ene + j)->rend).y + ((*ene + j)->rend).h / 2;
+			for (int i = 1; i < *nBull; i++) {
+				if ((*bul + i)->isRendered) {
+					double dist_2 = pow(((*bul + i)->bullRend.x - enecent.x), 2) + pow(((*bul + i)->bullRend.y - enecent.y), 2);
 					if (dist_2 < 200) {
-						printf("%d", (*ene + j)->nHit);
 						if (((*ene + j)->nHit) < 3) {
 							(*bul + i)->isRendered = false;
 							((*ene + j)->nHit)++;
 							(*ene + j)->isAngry = true;
+							(*ene + j)->vel = 75;
 						}
 						else {
 							(*bul + i)->isRendered = false;
 							((*ene + j)->nHit)++;
 							(*ene + j)->isAngry = true;
 							(*ene + j)->isRendered = false;
+							enemyP--;
 						}
 					}
 				}
+			}
+			double dist_2 = pow((enecent.x - SCREEN_SIZE.x / 2), 2) + pow((enecent.y - SCREEN_SIZE.y / 2), 2);
+			if (dist_2 < 400) {
+				mChar->isRendered = false;
+				(*ene + j)->vel = 0;
+				//terminate
 			}
 		}
 	}
 }
 
+void game::createEnemy()
+{
+	mt19937 gen(rd());
+	while (enemyTC > enemyP) {
+		int x = (gen() % (MAP_SIZE.x - 64)) + 32;
+		int y = (gen() % (MAP_SIZE.x - 64)) + 32;
+		float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
+		while (dist < 5000) {
+			printf("%d, %d", x, y);
+			x = (gen() % (MAP_SIZE.x - 64)) + 32;
+			y = (gen() % (MAP_SIZE.x - 64)) + 32;
+			dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
+		}
+		enemyObj->enemyCreate(x, y);
+		enemyP ++;
+	}
+}
