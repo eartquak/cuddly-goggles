@@ -23,7 +23,7 @@ void mainMenu::init()
 	SDL_GetWindowSize(window, &wx, &wy);
 	SCREEN_SIZE.x = wx;
 	SCREEN_SIZE.y = wy;
-	MAP_SIZE.x = MAP_SIZE.y = SCREEN_SIZE.x;
+	MAP_SIZE.x = MAP_SIZE.y = SCREEN_SIZE.y;
 	//SDL_GLContext GLContext = SDL_GL_CreateContext(window);
 	//SDL_GL_MakeCurrent(window, GLContext);
 	if (!window)

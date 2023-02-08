@@ -31,6 +31,7 @@ public:
 	void checkCollision();
 	void createEnemy();
 	struct enemy** ene = nullptr;
+	struct enebullet** enebul = nullptr;
 	struct bullet** bul = nullptr;
 	bool running() 
 	{

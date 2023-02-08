@@ -37,6 +37,7 @@ private:
 	SDL_Texture* Hred = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Rect Hrect;
+	int Hwdef = 0;
 
 	SDL_Texture* bullTex = nullptr;
 	Mix_Chunk* bullsound = nullptr;
@@ -49,10 +50,6 @@ private:
 	double bullvel = 700;
 	void moveBullet(double delta_time);
 	void makeBullet();
-};
-
-struct player {
-
 };
 
 struct bullet {

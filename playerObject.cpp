@@ -21,7 +21,7 @@ void playerObject::init(SDL_Renderer* render)
 	isRendered = true;
 	tmpSurface = IMG_Load("Assets/red.png");
 	Hred = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	Hrect.w = SCREEN_SIZE.x / 5;
+	Hrect.w = Hwdef = SCREEN_SIZE.x / 5;
 	Hrect.h = SCREEN_SIZE.y / 25;
 	Hrect.x = SCREEN_SIZE.x / 25;
 	Hrect.y = SCREEN_SIZE.y / 25;
@@ -55,7 +55,9 @@ void playerObject::update(double delta_time, int mu, int mr)
 	if (hp <= 0) {
 		isRendered = false;
 	}
-	Hrect.w = Hrect.w * hp / 100;
+	Hrect.w = (Hwdef * hp) / 100;
+	printf("%d", hp);
+	printf(" %d\n", Hrect.w);
 }
 
 void playerObject::render()
@@ -96,24 +98,6 @@ void playerObject::makeBullet() {
 //function to move bullet
 void playerObject::moveBullet(double delta_time) {
 	for (int i = 1; i < n; i++) {
-		/*((bull + i)->bullttuy) += bullvel * delta_time * sin((bull + i)->bullAngR);
-		if ((bull + i)->bullttuy >= 1) {
-			(bull + i)->bullRect.y -= 1;
-			(bull + i)->bullttuy = 0;
-		}
-		else if ((bull + i)->bullttuy <= -1) {
-			(bull + i)->bullRect.y += 1;
-			(bull + i)->bullttuy = 0;
-		}
-		((bull + i)->bullttux) += bullvel * delta_time * cos((bull + i)->bullAngR);
-		if ((bull + i)->bullttux >= 1) {
-			(bull + i)->bullRect.x -= 1;
-			(bull + i)->bullttux = 0;
-		}
-		else if ((bull + i)->bullttux <= -1) {
-			(bull + i)->bullRect.x += 1;
-			(bull + i)->bullttux = 0;
-		}*/
 		(bull + i)->bullpos.MakeVel(bullvel, (bull + i)->bullAngR, &(bull + i)->bullttux, &(bull + i)->bullttuy, delta_time);
 		(bull + i)->bullRend.x = (bull + i)->bullpos.x + transform->x;
 		(bull + i)->bullRend.y = (bull + i)->bullpos.y + transform->y;
@@ -124,7 +108,7 @@ void playerObject::bulletDestroy() {
 	struct bullet bu[100];
 	int k = 0;
 	for (int i = 1; i < n; i++) {
-		if (*time <= ((bull + i)->time + 5)) {
+		if (*time >= ((bull + i)->time + 5)) {
 			bu[i-1] = *(bull + i);
 			k += 1;
 		}

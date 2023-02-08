@@ -22,6 +22,11 @@ public:
 	void enemyAttack(struct enemy* enmy);
 	void enemy_random(struct enemy* enmy, double delta_time);
 	void enemy_normal(struct enemy* enmy, double delta_time);
+	void makeBullet(struct enemy* enmy);
+	void moveBullet(double delta_time);
+	void type1_movement(double delta_time, struct enemy *enmy);
+	void type2_movement(double delta_time, struct enemy* enmy);
+	void enbulletDestroy();
 	int nEnemy = 1;
 	//SDL_Rect uRect
 	struct enemy* en = nullptr;
@@ -30,9 +35,14 @@ public:
 	//Vector2 MAP_SIZE;
 	int PLAYER_SIZE;
 	double *time = 0;
+	struct enebullet* enbull;
+	int nb;
+	double bullvel = 500;
 private:
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* enemyTex = nullptr;
+	SDL_Texture* enemyTex1 = nullptr;
+	SDL_Texture* bullTex = nullptr;
 	//double ang = 0;
 	//double angR = 0;
 	//float tAng = 0;
@@ -61,4 +71,18 @@ struct enemy {
 	double tr = 0;
 	double ptr = 0;
 	bool r = true;
+	int type;
+	int bulln;
+};
+
+struct enebullet {
+	double bullAng = 0;
+	double bullAngR = 0;
+	Vector2 bullpos;
+	SDL_Rect bullRend;
+	double bullttux = 0;
+	double bullttuy = 0;
+	double time = 0;
+	bool isRendered = true;
+	
 };

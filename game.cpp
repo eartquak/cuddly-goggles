@@ -18,40 +18,6 @@ using namespace std;
 
 void game::init(SDL_Renderer *render)
 {
-	/*if (SDL_Init(SDL_INIT_EVERYTHING))
-	{
-		printf("SDL not initialized\n");
-
-		return;
-	}
-	int wx, wy;
-	window = SDL_CreateWindow("game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_SIZE.x, SCREEN_SIZE.x, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	SDL_GetWindowSize(window, &wx, &wy);
-	SCREEN_SIZE.x = wx;
-	SCREEN_SIZE.y = wy;
-	MAP_SIZE.x = MAP_SIZE.y =720;
-	//SDL_GLContext GLContext = SDL_GL_CreateContext(window);
-	//SDL_GL_MakeCurrent(window, GLContext);
-	if (!window)
-	{
-		printf("window not created\n");
-		return;
-	}
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (!renderer)
-	{	
-		printf("renderer not created\n");
-		return;
-	}
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	//SDL_GL_SetSwapInterval(-1);
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-
-	TTF_Init();
-
-	Mix_Init(0);
-	Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 1024);
-	*/
 	renderer = render;
 
 	isRunning = true;
@@ -59,13 +25,6 @@ void game::init(SDL_Renderer *render)
 	mChar = new playerObject();
 	map = new Map();
 	enemyObj = new enemyObject();
-	
-	//mChar->SCREEN_SIZE = SCREEN_SIZE;
-	//map->SCREEN_SIZE = SCREEN_SIZE;
-	//enemyObj->SCREEN_SIZE = SCREEN_SIZE;
-	//mChar->MAP_SIZE = MAP_SIZE;
-	//map->MAP_SIZE = MAP_SIZE;
-	//enemyObj->MAP_SIZE = MAP_SIZE;
 	mChar->init(renderer);
 	mCharPos = &(mChar->destRect);
 	(*mCharPos).y = (SCREEN_SIZE.y / 2 - mCharPos->h / 2);
@@ -87,6 +46,7 @@ void game::init(SDL_Renderer *render)
 	nEnemy = &(enemyObj->nEnemy);
 	enemyObj->plChar = mChar;
 	enemyObj->time = &time1;
+	enebul = &enemyObj->enbull;
 	prev_tick = SDL_GetPerformanceCounter();
 	
 	SDL_RendererInfo rendererInfo;
@@ -173,6 +133,9 @@ void game::update()
 	//printf("\r");
 	enemyTC = (int)(time1/2)+5;
 	createEnemy();
+	if (mChar->hp <= 0) {
+		isRunning = false;
+	}
 }
 
 void game::render()
@@ -181,17 +144,6 @@ void game::render()
 	map->render();
 	mChar->render();
 	enemyObj->render();
-
-	/*SDL_Surface* surfaceMessage = TTF_RenderText_Solid(agave, "apple", {255, 255, 255});
-	SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-	SDL_Rect Message_rect;
-	Message_rect.x = 0;
-	Message_rect.y = 0;
-	Message_rect.w = 100;
-	Message_rect.h = 100;
-	SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-	SDL_FreeSurface(surfaceMessage);
-	SDL_DestroyTexture(Message);*/
 	SDL_RenderPresent(renderer);
 }
 //collison needs to change - quad tree
@@ -240,10 +192,34 @@ void game::checkCollision()
 			if (dist_2 < 400) {
 				mChar->hp = mChar->hp - 100;
 				(*ene + j)->vel = 0;
-				//terminate
-				isRunning = false;
+			}
+			if ((*ene + j)->type == 1) {
+				if (dist_2 < 100000) {
+					(*ene + j)->r = false;
+				}
+				else {
+					(*ene + j)->r = true;
+				}
+			}
+			if ((*ene + j)->type == 2) {
+				if (dist_2 > 100000) {
+					(*ene + j)->r = false;
+				}
+				else {
+					(*ene + j)->r = true;
+				}
 			}
 		}
+	}
+	for (int i = 1; i < enemyObj->nb; i++) {
+		if ((*enebul + i)->isRendered) {
+			double dist_2 = pow(((*enebul + i)->bullpos.x) - (SCREEN_SIZE.x / 2) + transform->x, 2) + pow(((*enebul + i)->bullpos.y) - (SCREEN_SIZE.y / 2) + transform->y, 2);
+			if (dist_2 < 200) {
+				mChar->hp = mChar->hp - 25;
+				(*enebul + i)->isRendered = false;
+			}
+		}
+
 	}
 }
 
@@ -254,13 +230,13 @@ void game::createEnemy()
 		int x = (gen() % (MAP_SIZE.x - 64)) + 32;
 		int y = (gen() % (MAP_SIZE.x - 64)) + 32;
 		float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
-		while (dist < 20000) {
+		while (dist < 30000) {
 			printf("%d, %d", x, y);
 			x = (gen() % (MAP_SIZE.x - 64)) + 32;
 			y = (gen() % (MAP_SIZE.x - 64)) + 32;
 			dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
 		}
-		enemyObj->enemyCreate(x, y);
+		//enemyObj->enemyCreate(x, y);
 		enemyP ++;
 	}
 }
