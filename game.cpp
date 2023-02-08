@@ -16,9 +16,9 @@ SDL_Event game::event;
 
 using namespace std;
 
-void game::init()
+void game::init(SDL_Renderer *render)
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING))
+	/*if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
 		printf("SDL not initialized\n");
 
@@ -51,6 +51,8 @@ void game::init()
 
 	Mix_Init(0);
 	Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 1024);
+	*/
+	renderer = render;
 
 	isRunning = true;
 
@@ -58,12 +60,12 @@ void game::init()
 	map = new Map();
 	enemyObj = new enemyObject();
 	
-	mChar->SCREEN_SIZE = SCREEN_SIZE;
-	map->SCREEN_SIZE = SCREEN_SIZE;
-	enemyObj->SCREEN_SIZE = SCREEN_SIZE;
-	mChar->MAP_SIZE = MAP_SIZE;
-	map->MAP_SIZE = MAP_SIZE;
-	enemyObj->MAP_SIZE = MAP_SIZE;
+	//mChar->SCREEN_SIZE = SCREEN_SIZE;
+	//map->SCREEN_SIZE = SCREEN_SIZE;
+	//enemyObj->SCREEN_SIZE = SCREEN_SIZE;
+	//mChar->MAP_SIZE = MAP_SIZE;
+	//map->MAP_SIZE = MAP_SIZE;
+	//enemyObj->MAP_SIZE = MAP_SIZE;
 	mChar->init(renderer);
 	mCharPos = &(mChar->destRect);
 	(*mCharPos).y = (SCREEN_SIZE.y / 2 - mCharPos->h / 2);
@@ -84,6 +86,7 @@ void game::init()
 	ene = &(enemyObj->en);
 	nEnemy = &(enemyObj->nEnemy);
 	enemyObj->plChar = mChar;
+	enemyObj->time = &time1;
 	prev_tick = SDL_GetPerformanceCounter();
 	
 	SDL_RendererInfo rendererInfo;
@@ -131,6 +134,7 @@ void game::handleEvent()
 			{
 				case SDLK_w:
 					mu = 0;
+					mu = 0;
 					break;
 				case SDLK_a:
 					mr = 0;
@@ -162,7 +166,9 @@ void game::update()
 	cnt++;
 	time1 += delta_time;
 	checkCollision();
-	mChar->bulletDestroy();
+	if (((int)time) % 5 == 0) {
+		mChar->bulletDestroy();
+	}
 	//printf("FPS: %lf", 1 / delta_time);
 	//printf("\r");
 	enemyTC = (int)(time1/2)+5;
@@ -187,14 +193,6 @@ void game::render()
 	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyTexture(Message);*/
 	SDL_RenderPresent(renderer);
-}
-
-void game::clean()
-{
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(renderer);
-	SDL_Quit();
-	printf("Game quit\n");
 }
 //collison needs to change - quad tree
 void game::checkCollision()
@@ -240,9 +238,10 @@ void game::checkCollision()
 			}
 			double dist_2 = pow((enecent.x - SCREEN_SIZE.x / 2), 2) + pow((enecent.y - SCREEN_SIZE.y / 2), 2);
 			if (dist_2 < 400) {
-				mChar->isRendered = false;
+				mChar->hp = mChar->hp - 100;
 				(*ene + j)->vel = 0;
 				//terminate
+				isRunning = false;
 			}
 		}
 	}
@@ -255,7 +254,7 @@ void game::createEnemy()
 		int x = (gen() % (MAP_SIZE.x - 64)) + 32;
 		int y = (gen() % (MAP_SIZE.x - 64)) + 32;
 		float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
-		while (dist < 5000) {
+		while (dist < 20000) {
 			printf("%d, %d", x, y);
 			x = (gen() % (MAP_SIZE.x - 64)) + 32;
 			y = (gen() % (MAP_SIZE.x - 64)) + 32;

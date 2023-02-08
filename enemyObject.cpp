@@ -30,11 +30,12 @@ void enemyObject::init(SDL_Renderer* render, Vector2* r, SDL_Rect* pR)
 void enemyObject::update(double delta_time)
 {
 	for (int i = 1; i < nEnemy; i++) {
-		(en + i)->angR = atan2((double)(((en + i)->rend.y + (en + i)->rend.h / 2) - SCREEN_SIZE.y / 2), (double)(((en + i)->rend.x + (en + i)->rend.w / 2) - SCREEN_SIZE.x / 2));
-		(en + i)->ang = ((double)180 * (en + i)->angR / M_PI);
-		(en + i)->pos.MakeVel((en+i)->vel, (en+i)->angR, &(en + i)->enettux, &(en + i)->enettuy, delta_time);
-		(en + i)->rend.y = (en + i)->pos.y + transform->y;
-		(en + i)->rend.x = (en + i)->pos.x + transform->x;
+		if ((en + i)->r) {
+			enemy_random(en + i, delta_time);
+		}
+		else {
+			enemy_normal(en + i, delta_time);
+		}
 	}
 }
 
@@ -96,6 +97,9 @@ void enemyObject::enemyCreate(int x, int y)
 	(en + nEnemy - 1)->health = 100;
 	(en + nEnemy - 1)->enettux = 0;
 	(en + nEnemy - 1)->enettuy = 0;
+	(en + nEnemy - 1)->ptr = 0;
+	(en + nEnemy - 1)->r = true;
+	(en + nEnemy - 1)->tr = 0;
 }
 
 void enemyObject::enemyAttack(struct enemy *enmy)
@@ -103,5 +107,29 @@ void enemyObject::enemyAttack(struct enemy *enmy)
 	/*if (enmy->ttk == 0) {
 		mChar
 	}*/
+}
+void enemyObject::enemy_random(enemy* enmy, double delta_time)
+{
+	mt19937 gen(rd1());
+	printf("%lf\n", *time);
+	if (*time > enmy->ptr + enmy->tr) {
+		enmy->ang = rd1() % 360;
+		enmy->angR = M_PI * (enmy->ang) / 180;
+		enmy->tr = ((gen() % 10) * 0.05) + 1;
+		enmy->ptr = *time;
+		enmy->pos.MakeVel(enmy->vel, enmy->angR, &enmy->enettux, &enmy->enettuy, delta_time);
+	}
+	else {
+		enmy->pos.MakeVel(enmy->vel, enmy->angR, &enmy->enettux, &enmy->enettuy, delta_time);
+	}
+	enmy->rend.y = enmy->pos.y + transform->y;
+	enmy->rend.x = enmy->pos.x + transform->x;
+}
+
+void enemyObject::enemy_normal(enemy* enmy, double delta_time)
+{
+	enmy->angR = atan2((double)((enmy->rend.y + enmy->rend.h / 2) - SCREEN_SIZE.y / 2), (double)((enmy->rend.x + enmy->rend.w / 2) - SCREEN_SIZE.x / 2));
+	enmy->ang = ((double)180 * enmy->angR / M_PI);
+	enmy->pos.MakeVel(enmy->vel, enmy->angR, &enmy->enettux, &enmy->enettuy, delta_time);
 }
 

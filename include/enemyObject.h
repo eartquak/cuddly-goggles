@@ -20,7 +20,8 @@ public:
 	void render();
 	void enemyCreate(int x, int y);
 	void enemyAttack(struct enemy* enmy);
-	void enemy_random(struct enemy* enmy);
+	void enemy_random(struct enemy* enmy, double delta_time);
+	void enemy_normal(struct enemy* enmy, double delta_time);
 	int nEnemy = 1;
 	//SDL_Rect uRect
 	struct enemy* en = nullptr;
@@ -28,6 +29,7 @@ public:
 	//Vector2 SCREEN_SIZE;
 	//Vector2 MAP_SIZE;
 	int PLAYER_SIZE;
+	double *time = 0;
 private:
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* enemyTex = nullptr;
@@ -56,4 +58,7 @@ struct enemy {
 	double vel = 50;
 	int health = 100;
 	double ttk = 0;
+	double tr = 0;
+	double ptr = 0;
+	bool r = true;
 };

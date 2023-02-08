@@ -124,7 +124,7 @@ void playerObject::bulletDestroy() {
 	struct bullet bu[100];
 	int k = 0;
 	for (int i = 1; i < n; i++) {
-		if (*time <= ((bull + i)->time + 2)) {
+		if (*time <= ((bull + i)->time + 5)) {
 			bu[i-1] = *(bull + i);
 			k += 1;
 		}

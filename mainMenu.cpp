@@ -108,10 +108,10 @@ void mainMenu::handleEvent()
 void mainMenu::update()
 {
 	if ((x > play_mr.x) && (x < (play_mr.x + play_mr.w)) && (y > play_mr.y) && (y < (play_mr.y + play_mr.h))) {
-		borrect.x = play_mr.x - 10;
+		borrect.x = saved_game_mr.x - 30;
 		borrect.y = play_mr.y - 10;
-		borrect.w = play_mr.w + 20;
-		borrect.h = play_mr.h + 20;
+		borrect.w = saved_game_mr.w + 60;
+		borrect.h = saved_game_mr.h + 20;
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				play_game();
@@ -125,16 +125,16 @@ void mainMenu::update()
 		borrect.h = saved_game_mr.h + 20;
 	}
 	else if ((x > settings_mr.x) && (x < (settings_mr.x + settings_mr.w)) && (y > settings_mr.y) && (y < (settings_mr.y + settings_mr.h))) {
-		borrect.x = settings_mr.x - 20;
+		borrect.x = saved_game_mr.x - 30;
 		borrect.y = settings_mr.y - 10;
-		borrect.w = settings_mr.w + 40;
-		borrect.h = settings_mr.h + 20;
+		borrect.w = saved_game_mr.w + 60;
+		borrect.h = saved_game_mr.h + 20;
 	}
 	else if ((x > quit_mr.x) && (x < (quit_mr.x + quit_mr.w)) && (y > quit_mr.y) && (y < (quit_mr.y + quit_mr.h))) {
-		borrect.x = quit_mr.x - 10;
+		borrect.x = saved_game_mr.x - 30;
 		borrect.y = quit_mr.y - 10;
-		borrect.w = quit_mr.w + 20;
-		borrect.h = quit_mr.h + 20;
+		borrect.w = saved_game_mr.w + 60;
+		borrect.h = saved_game_mr.h + 20;
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				isRunning = false;
