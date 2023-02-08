@@ -15,17 +15,19 @@
 
 using namespace std;
 
+extern Vector2 SCREEN_SIZE;
+extern Vector2 MAP_SIZE;
 
 class game {
 public:
 	game();
 	~game();
 
-	void init();
+	void init(SDL_Renderer *render);
 	void handleEvent();
 	void update();
 	void render();
-	void clean();
+	//void clean();
 	void checkCollision();
 	void createEnemy();
 	struct enemy** ene = nullptr;
@@ -40,10 +42,9 @@ public:
 	int coll = 0;
 private:
 	bool isRunning = false;
-	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
-	Vector2 SCREEN_SIZE;
-	Vector2 MAP_SIZE;
+	//Vector2 SCREEN_SIZE;
+	//Vector2 MAP_SIZE;
 	Uint64 prev_tick = 0;
 	double fps_time = 0;
 	double delta_time = 0;

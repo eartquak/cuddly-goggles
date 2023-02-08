@@ -19,8 +19,14 @@ void playerObject::init(SDL_Renderer* render)
 	SDL_Surface* tmpSurface = IMG_Load("Assets/player.png");
 	gObjTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	isRendered = true;
+	tmpSurface = IMG_Load("Assets/red.png");
+	Hred = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+	Hrect.w = SCREEN_SIZE.x / 5;
+	Hrect.h = SCREEN_SIZE.y / 25;
+	Hrect.x = SCREEN_SIZE.x / 25;
+	Hrect.y = SCREEN_SIZE.y / 25;
 	
-	//initializing bullet struct
+	//initializing bullet
 	bulln = 6;
 	tmpSurface = IMG_Load("Assets/bullet.png");
 	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
@@ -46,6 +52,10 @@ void playerObject::update(double delta_time, int mu, int mr)
 	ang = ((double)180 * atan2((double)((destRect.y + destRect.h/2)-y), (double)((destRect.x + destRect.w / 2) - x)) / M_PI);
 	//make the bullet move in relation to main surface
 	moveBullet(delta_time);
+	if (hp <= 0) {
+		isRendered = false;
+	}
+	Hrect.w = Hrect.w * hp / 100;
 }
 
 void playerObject::render()
@@ -60,7 +70,9 @@ void playerObject::render()
 	if (isRendered) {
 		SDL_RenderCopyEx(renderer, gObjTex, NULL, &destRect, ang, NULL, SDL_FLIP_NONE);
 	}
+	SDL_RenderCopy(renderer, Hred, NULL, &Hrect);
 }
+
 
 //function to create the bullet
 void playerObject::makeBullet() {

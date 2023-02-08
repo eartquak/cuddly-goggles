@@ -17,8 +17,8 @@ public:
 	void init(SDL_Renderer* render);
 	void update(double delta_time, int mu, int mr, bool tx, bool ty);
 	void render();
-	Vector2 SCREEN_SIZE;
-	Vector2 MAP_SIZE;
+	//Vector2 SCREEN_SIZE;
+	//Vector2 MAP_SIZE;
 	int PLAYER_SIZE;
 	double angR;
 	Vector2 mappos;

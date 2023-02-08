@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <random>
 #include "game.h"
 #include "playerObject.h"
 #include "Vector2.h"
@@ -19,12 +20,13 @@ public:
 	void render();
 	void enemyCreate(int x, int y);
 	void enemyAttack(struct enemy* enmy);
+	void enemy_random(struct enemy* enmy);
 	int nEnemy = 1;
 	//SDL_Rect uRect
 	struct enemy* en = nullptr;
 	class playerObject* plChar = nullptr;
-	Vector2 SCREEN_SIZE;
-	Vector2 MAP_SIZE;
+	//Vector2 SCREEN_SIZE;
+	//Vector2 MAP_SIZE;
 	int PLAYER_SIZE;
 private:
 	SDL_Renderer* renderer = nullptr;
@@ -39,6 +41,7 @@ private:
 	//SDL_Rect rect;
 	//SDL_Rect spawn_rect;
 	int ramble = 0;
+	random_device rd1;
 };
 
 struct enemy {

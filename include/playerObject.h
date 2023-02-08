@@ -28,13 +28,15 @@ public:
 	struct bullet* bull = nullptr;
 	int bulln = 6;
 	bool isRendered = true;
-	int health = 100;
-	Vector2 SCREEN_SIZE;
-	Vector2 MAP_SIZE;
+	int hp = 100;
+	//Vector2 SCREEN_SIZE;
+	//Vector2 MAP_SIZE;
 	int PLAYER_SIZE;
 private:
 	SDL_Texture* gObjTex = nullptr;
+	SDL_Texture* Hred = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	SDL_Rect Hrect;
 
 	SDL_Texture* bullTex = nullptr;
 	Mix_Chunk* bullsound = nullptr;

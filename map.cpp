@@ -16,6 +16,7 @@ void Map::init(SDL_Renderer* render)
 {
 	//initialize tile and map
 	PLAYER_SIZE = SCREEN_SIZE.y / 10;
+	printf("\n%d\n", PLAYER_SIZE);
 	renderer = render;
 	SDL_Surface* tmpSurface = IMG_Load("Assets/tile.png");
 	mapTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, MAP_SIZE.x, MAP_SIZE.y);
@@ -97,20 +98,20 @@ void Map::makeMap(int n)
 		int side = gen() % 4;
 		switch (side) {
 		case 0:
-			tempm->rect.x = prevm.rect.x + MAP_SIZE.x + 100;
+			tempm->rect.x = prevm.rect.x + MAP_SIZE.x + 3 * PLAYER_SIZE;
 			tempm->rect.y = prevm.rect.y + 0;
 			break;
 		case 1:
 			tempm->rect.x = prevm.rect.x + 0;
-			tempm->rect.y = prevm.rect.y - MAP_SIZE.y - 100;
+			tempm->rect.y = prevm.rect.y - MAP_SIZE.y - 3 * PLAYER_SIZE;
 			break;
 		case 2:
-			tempm->rect.x = prevm.rect.x - MAP_SIZE.x - 100;
+			tempm->rect.x = prevm.rect.x - MAP_SIZE.x - 3 * PLAYER_SIZE;
 			tempm->rect.y = prevm.rect.y + 0;
 			break;
 		case 3:
 			tempm->rect.x = prevm.rect.x + 0;
-			tempm->rect.y = prevm.rect.y + MAP_SIZE.y + 100;
+			tempm->rect.y = prevm.rect.y + MAP_SIZE.y + 3 * PLAYER_SIZE;
 			break;
 		}
 		tempm->rect.w = MAP_SIZE.x;
