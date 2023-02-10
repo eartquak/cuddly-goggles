@@ -69,4 +69,5 @@ private:
 	int enemyP = 0;
 	random_device rd;
 	int waven = 3;
+	bool ult_mode = false;
 };

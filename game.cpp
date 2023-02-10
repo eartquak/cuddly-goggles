@@ -128,7 +128,9 @@ void game::update()
 	enemyObj->update(delta_time);
 	cnt++;
 	time1 += delta_time;
-	checkCollision();
+	if (!ult_mode) {
+		checkCollision();
+	}
 	if (((int)time) % 5 == 0) {
 		mChar->bulletDestroy();
 	}
@@ -160,7 +162,7 @@ void game::render()
 //collison needs to change - quad tree
 void game::checkCollision()
 {
-	if (((SCREEN_SIZE.x / 2 + mChar->destRect.w/2) >= (transform->x + MAP_SIZE.x)) || (SCREEN_SIZE.x / 2 - mChar->destRect.w / 2 <= transform->x)) {
+	if (((SCREEN_SIZE.x / 2 + mChar->destRect.w / 2) >= (transform->x + MAP_SIZE.x)) || (SCREEN_SIZE.x / 2 - mChar->destRect.w / 2 <= transform->x)) {
 		transform->x = safePos.x;
 		coll = 1;
 	}
@@ -220,6 +222,18 @@ void game::checkCollision()
 					(*ene + j)->r = true;
 				}
 			}
+			if (((*ene + j)->pos.x < 0) || ((*ene + j)->pos.x > (MAP_SIZE.x - (*ene + j)->rend.w))) {
+				(*ene + j)->pos.x = (*ene + j)->safepos.x;
+			}
+			else {
+				(*ene + j)->safepos.x = (*ene + j)->pos.x;
+			}
+			if (((*ene + j)->pos.y < 0) || ((*ene + j)->pos.y > (MAP_SIZE.y - (*ene + j)->rend.h))) {
+				(*ene + j)->pos.y = (*ene + j)->safepos.y;
+			}
+			else {
+				(*ene + j)->safepos.y = (*ene + j)->pos.y;
+			}
 		}
 	}
 	for (int i = 1; i < enemyObj->nb; i++) {
@@ -230,21 +244,19 @@ void game::checkCollision()
 				(*enebul + i)->isRendered = false;
 			}
 		}
-		
 	}
 }
 
 void game::createEnemy()
 {
 	mt19937 gen(rd());
-	int x = (gen() % (MAP_SIZE.x - 64)) + 32;
-	int y = (gen() % (MAP_SIZE.x - 64)) + 32;
+	int x = (gen() % ((int)MAP_SIZE.x - 64)) + 32;
+	int y = (gen() % ((int)MAP_SIZE.x - 64)) + 32;
 	int t = (gen() % 2) + 1;
 	float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
 	while (dist < 30000) {
-		printf("%d, %d", x, y);
-		x = (gen() % (MAP_SIZE.x - 64)) + 32;
-		y = (gen() % (MAP_SIZE.x - 64)) + 32;
+		x = (gen() % (int)(MAP_SIZE.x - 64)) + 32;
+		y = (gen() % (int)(MAP_SIZE.x - 64)) + 32;
 		dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
 	}
 	enemyObj->enemyCreate(x, y, t);

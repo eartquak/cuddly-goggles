@@ -22,7 +22,6 @@ void playerObject::init(SDL_Renderer* render)
 	tmpSurface = IMG_Load("Assets/red.png");
 	Hred = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	tmpSurface = IMG_Load("Assets/Border.png");
-
 	Hrect.w = Hwdef = SCREEN_SIZE.x / 5;
 	Hrect.h = SCREEN_SIZE.y / 25;
 	Hrect.x = SCREEN_SIZE.x / 25;
@@ -86,6 +85,8 @@ void playerObject::makeBullet() {
 		(bull + n - 1)->bullAngR = (M_PI * ((bull + n - 1)->bullAng)) / (double)180;
 		(bull + n - 1)->bullpos.x = (int)((destRect.x - (cos((bull + n - 1)->bullAngR) * (destRect.w / 2)) + (destRect.w / 2)) - transform->x);
 		(bull + n - 1)->bullpos.y = (int)((destRect.y - (sin((bull + n - 1)->bullAngR) * (destRect.h / 2)) + (destRect.h / 2)) - transform->y);
+		(bull + n - 1)->bullpos.x = SCREEN_SIZE.x / 2 - transform->x;
+		(bull + n - 1)->bullpos.y = SCREEN_SIZE.y / 2 - transform->y;
 		(bull + n - 1)->bullRend.h = 4;
 		(bull + n - 1)->bullRend.w = 8;
 		(bull + n - 1)->time = *time;

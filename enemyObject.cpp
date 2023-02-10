@@ -191,7 +191,7 @@ void enemyObject::enbulletDestroy() {
 	struct enebullet bu[100];
 	int k = 0;
 	for (int i = 1; i < nb; i++) {
-		printf("    %lf\n", (*time - ((enbull + i)->time + 5)));
+		//printf("    %lf\n", (*time - ((enbull + i)->time + 5)));
 		if (*time <= ((enbull + i)->time + 5)) {
 			bu[i - 1] = *(enbull + i);
 			k += 1;
@@ -209,6 +209,6 @@ void enemyObject::enbulletDestroy() {
 			*(enbull + i) = bu[i - 1];
 		}
 	}
-	printf("%d\n", nb);
+	//printf("%d\n", nb);
 }
 
