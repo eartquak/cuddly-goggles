@@ -18,7 +18,7 @@ public:
 	void init(SDL_Renderer* render, Vector2* r, SDL_Rect* pR);
 	void update(double delta_time);
 	void render();
-	void enemyCreate(int x, int y);
+	void enemyCreate(int x, int y, int t);
 	void enemyAttack(struct enemy* enmy);
 	void enemy_random(struct enemy* enmy, double delta_time);
 	void enemy_normal(struct enemy* enmy, double delta_time);
@@ -73,6 +73,7 @@ struct enemy {
 	bool r = true;
 	int type;
 	int bulln;
+	Vector2 safepos;
 };
 
 struct enebullet {
@@ -84,5 +85,4 @@ struct enebullet {
 	double bullttuy = 0;
 	double time = 0;
 	bool isRendered = true;
-	
 };

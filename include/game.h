@@ -30,6 +30,7 @@ public:
 	//void clean();
 	void checkCollision();
 	void createEnemy();
+	void spawnMechanic(int n);
 	struct enemy** ene = nullptr;
 	struct enebullet** enebul = nullptr;
 	struct bullet** bul = nullptr;
@@ -65,7 +66,7 @@ private:
 	bool rdown = false;
 	TTF_Font* agave = nullptr;
 	int ntr = 0;
-	int enemyTC = 0;
 	int enemyP = 0;
 	random_device rd;
+	int waven = 3;
 };

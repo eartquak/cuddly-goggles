@@ -18,30 +18,27 @@ void enemyObject::init(SDL_Renderer* render, Vector2* r, SDL_Rect* pR)
 	renderer = render;
 	SDL_Surface* tmpSurface = IMG_Load("Assets/zombie.png");
 	enemyTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	tmpSurface = IMG_Load("Assets/playerObject.png");
+	tmpSurface = IMG_Load("Assets/player.png");
 	enemyTex1 = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	tmpSurface = IMG_Load("Assets/bullet.png");
 	bullTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
 	SDL_FreeSurface(tmpSurface);
-	//rect.h = rect.w = 64;
-	//rect.x = rect.y = 0;
-	//uRect.h = uRect.w = 64;
 	en = (struct enemy*)malloc(sizeof(struct enemy));
 	enbull = (struct enebullet*)malloc(sizeof(struct enebullet));
-	//enemyCreate(0, 0);
-	enemyCreate(0, 0);
 }
 
 void enemyObject::update(double delta_time)
 {
 	for (int i = 1; i < nEnemy; i++) {
-		if (((en + i)->type == 1)) {
-			type1_movement(delta_time, en + i);
+		if ((en + i)->isRendered) {
+			if (((en + i)->type == 1)) {
+				type1_movement(delta_time, en + i);
+			}
+			if (((en + i)->type == 2)) {
+				type2_movement(delta_time, en + i);
+			}
+			(en + i)->ttk = (en + i)->ttk - delta_time;
 		}
-		if (((en + i)->type == 2)) {
-			type2_movement(delta_time, en + i);
-		}
-		(en + i)->ttk = (en + i)->ttk - delta_time;
 	}
 	moveBullet(delta_time);
 	if (((int)(*time) % 5) == 0) {
@@ -58,45 +55,18 @@ void enemyObject::render()
 	}
 	for (int i = 1; i < nEnemy; i++) {
 		if ((en + i)->isRendered) {
-			SDL_RenderCopyEx(renderer, enemyTex, NULL, &((en + i)->rend), (en + i)->ang, NULL, SDL_FLIP_NONE);
+			if ((en + i)->type == 1) {
+				SDL_RenderCopyEx(renderer, enemyTex, NULL, &((en + i)->rend), (en + i)->ang, NULL, SDL_FLIP_NONE);
+			}
+			else {
+				SDL_RenderCopyEx(renderer, enemyTex1, NULL, &((en + i)->rend), (en + i)->ang, NULL, SDL_FLIP_NONE);
+			}
 		}
 	}
 }
 
-void enemyObject::enemyCreate(int x, int y)
+void enemyObject::enemyCreate(int x, int y, int t)
 {
-	/*spawn_rect.x = spawn_rect.y = 128;
-	if (((*transform).x + SCREEN_SIZE * 2) <= 384) {
-		spawn_rect.w = (*transform).x + SCREEN_SIZE * 2 - 128;
-	}
-
-	else {
-		spawn_rect.w = 256;
-	}
-	if ((*transform).x >= 128) {
-		spawn_rect.x = (*transform).x;
-		spawn_rect.w = 384 - (*transform).x;
-	}
-	else {
-		spawn_rect.x = 128;
-		spawn_rect.w = 256;
-	}
-	if (384 >= ((*transform).y + SCREEN_SIZE * 2)) {
-		spawn_rect.h = (*transform).y + SCREEN_SIZE * 2 - 128;
-	}
-	else {
-		spawn_rect.h = 256;
-	}
-	if ((*transform).y >= 128) {
-		spawn_rect.y = (*transform).y;
-		spawn_rect.h = 384 - (*transform).y;
-	}
-	else {
-		spawn_rect.y = 128;
-		spawn_rect.h = 256;
-	}
-	//printf("%d, %d\n", spawn_rect.w, spawn_rect.h);
-	SDL_RenderCopy(renderer, bullTex, NULL, &spawn_rect);*/
 	nEnemy++;
 	en = (struct enemy*)realloc(en, nEnemy * sizeof(struct enemy));
 	(en + nEnemy - 1)->pos.x = x;
@@ -115,7 +85,9 @@ void enemyObject::enemyCreate(int x, int y)
 	(en + nEnemy - 1)->ptr = 0;
 	(en + nEnemy - 1)->r = false;
 	(en + nEnemy - 1)->tr = 0;
-	(en + nEnemy - 1)->type = 2;
+	(en + nEnemy - 1)->type = t;
+	(en + nEnemy - 1)->safepos.x = x;
+	(en + nEnemy - 1)->safepos.y = y;
 }
 
 void enemyObject::enemyAttack(struct enemy *enmy)
@@ -164,17 +136,24 @@ void enemyObject::enemy_normal(struct enemy* enmy, double delta_time)
 
 void enemyObject::makeBullet(struct enemy *enmy) {
 		nb++;
-		enbull = (struct enebullet*)realloc(enbull, nb * sizeof(struct enebullet));
-		(enbull + nb - 1)->bullAng = enmy->ang;
-		(enbull + nb - 1)->bullAngR = (M_PI * ((enbull + nb - 1)->bullAng)) / (double)180;
-		(enbull + nb - 1)->bullpos.x = (int)((enmy->rend.x - (cos((enbull + nb - 1)->bullAngR) * (enmy->rend.w / 2)) + (enmy->rend.w / 2)) - transform->x);
-		(enbull + nb - 1)->bullpos.y = (int)((enmy->rend.y - (sin((enbull + nb - 1)->bullAngR) * (enmy->rend.h / 2)) + (enmy->rend.h / 2)) - transform->y);
-		(enbull + nb - 1)->bullRend.h = 4;
-		(enbull + nb - 1)->bullRend.w = 8;
-		(enbull + nb - 1)->time = *time;
-		(enbull + nb - 1)->isRendered = true;
-		(enbull + nb - 1)->bullttux = 0;
-		(enbull + nb - 1)->bullttuy = 0;
+		if (enbull) {
+			struct enebullet* tmp = (struct enebullet*)realloc(enbull, nb * sizeof(struct enebullet));
+			if (tmp) {
+				enbull = tmp;
+			}
+		}
+		if (enbull) {
+			(enbull + nb - 1)->bullAng = enmy->ang;
+			(enbull + nb - 1)->bullAngR = (M_PI * ((enbull + nb - 1)->bullAng)) / (double)180;
+			(enbull + nb - 1)->bullpos.x = (int)((enmy->rend.x - (cos((enbull + nb - 1)->bullAngR) * (enmy->rend.w / 2)) + (enmy->rend.w / 2)) - transform->x);
+			(enbull + nb - 1)->bullpos.y = (int)((enmy->rend.y - (sin((enbull + nb - 1)->bullAngR) * (enmy->rend.h / 2)) + (enmy->rend.h / 2)) - transform->y);
+			(enbull + nb - 1)->bullRend.h = 4;
+			(enbull + nb - 1)->bullRend.w = 8;
+			(enbull + nb - 1)->time = *time;
+			(enbull + nb - 1)->isRendered = true;
+			(enbull + nb - 1)->bullttux = 0;
+			(enbull + nb - 1)->bullttuy = 0;
+		}
 }
 //function to move bullet
 void enemyObject::moveBullet(double delta_time) {
@@ -212,15 +191,24 @@ void enemyObject::enbulletDestroy() {
 	struct enebullet bu[100];
 	int k = 0;
 	for (int i = 1; i < nb; i++) {
-		if (*time >= ((enbull + i)->time + 5)) {
+		printf("    %lf\n", (*time - ((enbull + i)->time + 5)));
+		if (*time <= ((enbull + i)->time + 5)) {
 			bu[i - 1] = *(enbull + i);
 			k += 1;
 		}
 	}
 	nb = k + 1;
-	enbull = (struct enebullet*)realloc(enbull, nb * sizeof(struct enebullet));
-	for (int i = 1; i < nb; i++) {
-		*(enbull + i) = bu[i - 1];
+	if (enbull) {
+		struct enebullet*tmp = (struct enebullet*)realloc(enbull, nb * sizeof(struct enebullet));
+		if (tmp) {
+			enbull = tmp;
+		}
 	}
+	if (enbull) {
+		for (int i = 1; i < nb; i++) {
+			*(enbull + i) = bu[i - 1];
+		}
+	}
+	printf("%d\n", nb);
 }
 

@@ -13,7 +13,7 @@ playerObject::~playerObject()
 void playerObject::init(SDL_Renderer* render)
 {
 	//initializing main char
-	PLAYER_SIZE = SCREEN_SIZE.y / 16;
+	PLAYER_SIZE = SCREEN_SIZE.y / 16  ;
 	destRect.w = destRect.h = PLAYER_SIZE;
 	renderer = render;
 	SDL_Surface* tmpSurface = IMG_Load("Assets/player.png");
@@ -21,6 +21,8 @@ void playerObject::init(SDL_Renderer* render)
 	isRendered = true;
 	tmpSurface = IMG_Load("Assets/red.png");
 	Hred = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+	tmpSurface = IMG_Load("Assets/Border.png");
+
 	Hrect.w = Hwdef = SCREEN_SIZE.x / 5;
 	Hrect.h = SCREEN_SIZE.y / 25;
 	Hrect.x = SCREEN_SIZE.x / 25;
@@ -56,8 +58,6 @@ void playerObject::update(double delta_time, int mu, int mr)
 		isRendered = false;
 	}
 	Hrect.w = (Hwdef * hp) / 100;
-	printf("%d", hp);
-	printf(" %d\n", Hrect.w);
 }
 
 void playerObject::render()
@@ -108,7 +108,7 @@ void playerObject::bulletDestroy() {
 	struct bullet bu[100];
 	int k = 0;
 	for (int i = 1; i < n; i++) {
-		if (*time >= ((bull + i)->time + 5)) {
+		if (*time <= ((bull + i)->time + 5)) {
 			bu[i-1] = *(bull + i);
 			k += 1;
 		}

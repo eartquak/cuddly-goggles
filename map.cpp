@@ -15,7 +15,7 @@ Map::~Map()
 void Map::init(SDL_Renderer* render)
 {
 	//initialize tile and map
-	PLAYER_SIZE = SCREEN_SIZE.y / 10;
+	PLAYER_SIZE = SCREEN_SIZE.y / 16;
 	renderer = render;
 	SDL_Surface* tmpSurface = IMG_Load("Assets/tile.png");
 	mapTex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, MAP_SIZE.x, MAP_SIZE.y);

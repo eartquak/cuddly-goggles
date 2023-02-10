@@ -35,6 +35,7 @@ public:
 private:
 	SDL_Texture* gObjTex = nullptr;
 	SDL_Texture* Hred = nullptr;
+	SDL_Texture* Border = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Rect Hrect;
 	int Hwdef = 0;

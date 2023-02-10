@@ -90,10 +90,10 @@ void mainMenu::init()
 
 	SDL_FreeSurface(surfaceMessage);
 
-	borrect.x = play_mr.x - 10;
+	borrect.x = saved_game_mr.x - 30;
 	borrect.y = play_mr.y - 10;
-	borrect.w = play_mr.w + 20;
-	borrect.h = play_mr.h + 20;
+	borrect.w = saved_game_mr.w + 60;
+	borrect.h = saved_game_mr.h + 20;
 }
 
 void mainMenu::handleEvent()

@@ -57,6 +57,9 @@ void game::init(SDL_Renderer *render)
 	SDL_FreeSurface(tmpSurface);
 
 	agave = TTF_OpenFont("agave.ttf", 24);
+	spawnMechanic(3);
+	enemyP = 3;
+	waven--;
 }
 
 void game::handleEvent()
@@ -131,8 +134,16 @@ void game::update()
 	}
 	//printf("FPS: %lf", 1 / delta_time);
 	//printf("\r");
-	enemyTC = (int)(time1/2)+5;
-	createEnemy();
+	if (waven) {
+		if (!enemyP) {
+			spawnMechanic(3);
+			enemyP += 3;
+			waven--;
+		}
+	}
+	else {
+		isRunning = false;
+	}
 	if (mChar->hp <= 0) {
 		isRunning = false;
 	}
@@ -219,24 +230,29 @@ void game::checkCollision()
 				(*enebul + i)->isRendered = false;
 			}
 		}
-
+		
 	}
 }
 
 void game::createEnemy()
 {
 	mt19937 gen(rd());
-	while (enemyTC > enemyP) {
-		int x = (gen() % (MAP_SIZE.x - 64)) + 32;
-		int y = (gen() % (MAP_SIZE.x - 64)) + 32;
-		float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
-		while (dist < 30000) {
-			printf("%d, %d", x, y);
-			x = (gen() % (MAP_SIZE.x - 64)) + 32;
-			y = (gen() % (MAP_SIZE.x - 64)) + 32;
-			dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
-		}
-		//enemyObj->enemyCreate(x, y);
-		enemyP ++;
+	int x = (gen() % (MAP_SIZE.x - 64)) + 32;
+	int y = (gen() % (MAP_SIZE.x - 64)) + 32;
+	int t = (gen() % 2) + 1;
+	float dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
+	while (dist < 30000) {
+		printf("%d, %d", x, y);
+		x = (gen() % (MAP_SIZE.x - 64)) + 32;
+		y = (gen() % (MAP_SIZE.x - 64)) + 32;
+		dist = pow((x - mCharPos->y + transform->x), 2) + pow((y - mCharPos->y + transform->y), 2);
+	}
+	enemyObj->enemyCreate(x, y, t);
+}
+
+void game::spawnMechanic(int n) 
+{
+	for (int i = 0; i < n; i++) {
+		createEnemy();
 	}
 }
